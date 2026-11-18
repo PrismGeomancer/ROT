@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ROT: Dead bags rot. Rot feeds the next.</title>
+<meta name="description" content="Burn the dead coins in your wallet. Every round, the fee pot buys $ROT and sends it to the wallets that burned. Every burn and payout is public.">
+<meta name="theme-color" content="#0F1D17">
+<meta property="og:title" content="ROT: Dead bags rot.">
+<meta property="og:description" content="Rot feeds the next.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="./assets/og.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ROT">
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#0F1D17; --soil:#16281F; --deep:#2A5E4D; --mid:#4FA88A; --green:#6FC3A3;
+  --bone:#E9E5D2; --muted:#8FB5A3; --pit:#0B1410; --danger:#D98B6A;
+  --line:rgba(143,181,163,.2);
+  --sans:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.22,.7,.2,1);
+  --gut:clamp(18px,4vw,56px);
+  --nav-h:60px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;color:var(--bone);font:400 17px/1.5 var(--sans);overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;
+  background:radial-gradient(1100px 620px at 85% -8%,rgba(79,168,138,.16),transparent 60%),radial-gradient(900px 500px at -5% 40%,rgba(42,94,77,.22),transparent 60%),var(--bg)}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:300;opacity:.07;mix-blend-mode:overlay;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+a{color:var(--green);text-underline-offset:4px}
+a:hover{color:var(--bone)}
+:focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:3px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:not-allowed}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none!important}
+h1,h2,h3,h4{font-family:var(--sans);font-weight:800;font-stretch:78%;line-height:.92;margin:0;letter-spacing:-.025em}
+em{font-style:normal;color:var(--green)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.skip{position:absolute;left:12px;top:-60px;background:var(--bone);color:var(--bg);padding:10px 14px;z-index:400;border-radius:4px}
+.skip:focus{top:10px}
+
+/* loader */
+#loader{position:fixed;inset:0;background:var(--bg);z-index:350;display:grid;place-items:center;transition:opacity .6s var(--ease),visibility .6s}
+#loader.off{opacity:0;visibility:hidden}
+#loader p{font-size:26px;font-weight:700;font-stretch:80%;color:var(--muted);margin:0 0 14px;text-align:center}
+#loader button{display:block;margin:0 auto;background:none;border:1px solid var(--line);color:var(--muted);padding:6px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .4s}
+#loader.skip-on button{opacity:1;pointer-events:auto}
+
+/* chrome */
+.chrome{position:sticky;top:0;z-index:60;height:var(--nav-h);display:flex;align-items:center;gap:clamp(10px,2.4vw,28px);padding:0 var(--gut);background:linear-gradient(var(--bg) 60%,rgba(15,29,23,0));backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--bone);font-size:28px;font-weight:800;font-stretch:78%;letter-spacing:-.03em;margin-right:auto}
+.mk{width:30px;height:30px;display:inline-block;background:var(--bone);-webkit-mask:url(assets/mark.png) center/contain no-repeat;mask:url(assets/mark.png) center/contain no-repeat;transition:transform .6s var(--ease)}
+.brand:hover .mk{transform:rotate(-8deg) scale(1.08)}
+.nav{display:flex;gap:clamp(10px,2.4vw,28px)}
+.nav a{color:var(--muted);text-decoration:none;padding:8px 2px;font-size:16px;font-weight:500;position:relative}
+.nav a:after{content:"";position:absolute;left:0;right:100%;bottom:2px;height:2px;background:var(--green);transition:right .45s var(--ease)}
+.nav a:hover,.nav a[aria-current=page]{color:var(--bone)}
+.nav a:hover:after,.nav a[aria-current=page]:after{right:0}
+.chrome .x{color:var(--muted);font-size:16px;text-decoration:none;padding:8px 2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:12px 28px;border:2px solid var(--green);background:var(--green);color:var(--pit);font-weight:700;font-size:17px;border-radius:999px;text-decoration:none;transition:transform .5s var(--ease),background .3s,color .3s,border-color .3s}
+.btn:hover{background:var(--bone);border-color:var(--bone);color:var(--pit);transform:translateY(-2px)}
+.btn:after{content:"→";transition:transform .4s var(--ease)}
+.btn:hover:after{transform:translateX(5px)}
+.btn--ghost{background:transparent;color:var(--bone);border-color:rgba(233,229,210,.35)}
+.btn--ghost:hover{background:var(--bone);color:var(--pit)}
+.btn.noar:after{content:none}
+.btn:disabled,.btn[aria-disabled=true]{background:transparent;border-color:var(--line);color:var(--muted);transform:none}
+.chrome .btn{min-height:40px;padding:6px 18px;font-size:15px;border-width:1.5px}
+.snd{background:none;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px;color:var(--muted);min-height:36px}
+.snd[aria-pressed=true]{color:var(--green);border-color:var(--green)}
+@media(max-width:380px){.chrome{gap:6px}.nav{gap:6px}.nav a{font-size:14px;padding:8px 2px}.brand{font-size:22px;gap:6px}.mk{width:24px;height:24px}.chrome .btn{padding:6px 12px;font-size:13px}}
+@media(max-width:600px){.snd{display:none}}
+
+/* pages */
+main{flex:1}
+.page{display:none}
+.page.on{display:block;animation:rise .7s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--gut)}
+.pg{padding-top:clamp(28px,6vw,80px);padding-bottom:clamp(50px,8vw,110px)}
+.pg h2{font-size:clamp(54px,11vw,150px);margin-bottom:26px}
+.lede{max-width:56ch;font-size:clamp(18px,1.7vw,21px);opacity:.9}
+.muted{color:var(--muted)}
+.reveal{opacity:0;transform:translateY(34px);transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:var(--d,0s)}
+.reveal.in{opacity:1;transform:none}
+
+/* hero */
+.home-run{position:relative}
+.hero{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:center;padding:0 var(--gut);max-width:1360px;margin:0 auto;min-height:calc(100vh - var(--nav-h) - 96px)}
+.hero__txt{padding:10px 0 clamp(96px,15vh,140px);position:relative;z-index:2}
+.hero h2{font-size:clamp(52px,7.4vw,118px);line-height:.88;margin-bottom:24px}
+.hero h2 em{display:block}
+.hero .lede{font-size:clamp(18px,1.8vw,22px)}
+.ctas{display:flex;flex-wrap:wrap;gap:14px;margin:30px 0 8px}
+.counters{display:flex;flex-wrap:wrap;gap:14px 44px;margin:28px 0 0}
+.counter b{display:block;font-weight:800;font-stretch:80%;font-size:clamp(40px,4.6vw,68px);line-height:.9;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.counter span{font-size:16px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:10px;margin-top:20px;border:1px solid var(--line);border-radius:999px;padding:8px 18px;font-size:15px;color:var(--bone);background:rgba(22,40,31,.7)}
+.chip:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(111,195,163,.6);animation:pulse 2.4s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(111,195,163,0)}100%{box-shadow:0 0 0 0 rgba(111,195,163,0)}}
+.scene{position:relative;height:min(68vh,660px);min-height:300px;z-index:1}
+.scene canvas,.scene .coinsvg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.scene .coinsvg{display:none;padding:6%}
+.scene.nogl canvas{display:none}
+.scene.nogl .coinsvg{display:block}
+.scene .glnote{position:absolute;top:0;left:0;right:0;font-size:14px;color:var(--muted);text-align:center;margin:0}
+.soil{position:absolute;left:0;right:0;bottom:0;height:96px;background:var(--soil);z-index:3;display:flex;align-items:center}
+.soil:before{content:"";position:absolute;left:0;top:0;height:3px;width:calc(var(--u,0)*100%);background:var(--green);transition:width .25s linear}
+.soil p{margin:0 auto;width:100%;max-width:1360px;padding:0 calc(var(--gut) + 70px) 0 var(--gut);font-size:clamp(20px,2.6vw,32px);font-weight:700;font-stretch:80%;letter-spacing:-.02em;color:var(--bone)}
+.soil svg{position:absolute;right:var(--gut);bottom:100%;width:52px;height:52px;opacity:.5;transition:opacity .8s,transform .8s var(--ease);transform-origin:50% 100%;transform:scale(.7)}
+.soil.sprout svg{opacity:1;transform:scale(1.15)}
+@media(min-width:900px){
+  .home-run{height:260vh}
+  .home-run .stick{position:sticky;top:var(--nav-h)}
+}
+@media(max-width:899px){
+  .hero{grid-template-columns:1fr;min-height:0}
+  .scene{order:-1;height:36vh;min-height:230px;position:sticky;top:var(--nav-h);background:linear-gradient(var(--bg) 92%,rgba(15,29,23,0));z-index:5}
+  .hero__txt{padding-bottom:130px;padding-top:44px}
+  .soil{position:relative;height:auto;padding:22px 0}
+  .soil p{padding:0 calc(var(--gut) + 60px) 0 var(--gut)}
+}
+
+/* ticker */
+.ticker{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--pit);padding:16px 0;white-space:nowrap}
+.ticker .tr{display:inline-flex;gap:0;animation:slide 60s linear infinite}
+.ticker:hover .tr{animation-play-state:paused}
+.ticker span{display:inline-flex;align-items:baseline;gap:10px;padding:0 30px;font-size:18px;border-right:1px solid var(--line)}
+.ticker b{font-weight:800;font-stretch:80%;font-size:22px;color:var(--bone)}
+.ticker i{font-style:normal;color:var(--muted);font-family:var(--mono);font-size:14px}
+.ticker u{text-decoration:none;color:var(--green)}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* four rows */
+.rows4{padding:clamp(50px,9vw,120px) 0}
+.row4{display:grid;grid-template-columns:minmax(80px,.18fr) minmax(0,1fr) minmax(0,.9fr);gap:clamp(12px,3vw,48px);align-items:baseline;padding:clamp(26px,4vw,48px) 0;border-top:1px solid var(--line);transition:padding-left .6s var(--ease)}
+.row4:last-child{border-bottom:1px solid var(--line)}
+.row4:hover{padding-left:clamp(8px,2vw,26px)}
+.row4 .n{font-family:var(--mono);font-size:clamp(16px,1.6vw,20px);color:var(--green)}
+.row4 h3{font-size:clamp(64px,12vw,190px);line-height:.85;color:var(--bone);transition:color .5s}
+.row4:hover h3{color:var(--green)}
+.row4 p{margin:0;font-size:clamp(17px,1.5vw,20px);max-width:36ch;opacity:.9}
+@media(max-width:760px){.row4{grid-template-columns:1fr;gap:8px}}
+
+/* stats */
+.stats{background:var(--soil);padding:clamp(46px,8vw,100px) 0}
+.stats .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(18px,3vw,48px)}
+.stat b{display:block;font-weight:800;font-stretch:78%;font-size:clamp(48px,7vw,112px);line-height:.88;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:10px;font-size:18px;color:var(--muted)}
+@media(max-width:900px){.stats .wrap{grid-template-columns:1fr 1fr;row-gap:40px}}
+
+/* feed */
+.feedsec{padding:clamp(50px,9vw,120px) 0}
+.feedhead{display:flex;flex-wrap:wrap;gap:18px 40px;align-items:end;justify-content:space-between;margin-bottom:clamp(26px,4vw,50px)}
+.feedhead h3{font-size:clamp(48px,8vw,120px)}
+.feed{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.fc{display:block;text-decoration:none;color:var(--bone);background:var(--soil);border-radius:18px;padding:24px 24px 22px;transition:transform .6s var(--ease),background .4s,box-shadow .6s;position:relative;overflow:hidden}
+.fc:hover{transform:translateY(-6px);background:#1b3327;box-shadow:0 24px 50px -24px rgba(0,0,0,.7);color:var(--bone)}
+.fc b{display:block;font-size:clamp(34px,3.6vw,50px);font-weight:800;font-stretch:78%;letter-spacing:-.03em;line-height:.95;margin-bottom:14px;overflow-wrap:anywhere}
+.fc .am{font-family:var(--mono);font-size:18px}
+.fc .meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 10px;margin-top:18px;color:var(--muted);font-size:15px}
+.fc .meta .num{font-size:14px}
+.st{display:inline-flex;align-items:center;gap:8px}
+.st:before{content:"";width:9px;height:9px;border-radius:50%;background:var(--green)}
+.st.no{color:var(--muted)}
+.st.no:before{background:var(--muted);opacity:.5}
+@media(max-width:900px){.feed{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.feed{grid-template-columns:1fr}}
+
+/* cta */
+.big-cta{padding:clamp(60px,10vw,150px) 0;text-align:center;background:linear-gradient(180deg,var(--bg),var(--soil))}
+.big-cta h3{font-size:clamp(60px,13vw,200px);margin-bottom:34px}
+.facts{background:var(--bg);border-top:1px solid var(--line)}
+.facts .wrap{display:flex;flex-wrap:wrap;gap:10px 30px;align-items:center;padding-top:20px;padding-bottom:20px;font-size:16px;color:var(--muted)}
+.facts b{font-size:26px;color:var(--bone);font-weight:800}
+.facts button{background:none;border:1px solid var(--line);border-radius:999px;padding:6px 16px;color:var(--bone);font-size:15px;min-height:36px}
+.facts button:hover{border-color:var(--green)}
+
+/* cards, tables, forms */
+.card{background:var(--soil);border-radius:18px;padding:clamp(22px,3vw,34px);transition:transform .6s var(--ease),background .4s}
+.card h3{font-size:32px;margin-bottom:12px}
+.card p{margin:0}
+.grid{display:grid;gap:14px}
+.grid.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid .card:hover{transform:translateY(-4px);background:#1b3327}
+@media(max-width:900px){.grid.c3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid.c3{grid-template-columns:1fr}}
+.field{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0 14px}
+.field input{flex:1 1 260px;min-width:0;background:var(--pit);border:2px solid var(--line);color:var(--bone);padding:14px 22px;border-radius:999px;font:inherit;font-family:var(--mono);font-size:16px;min-height:56px;transition:border-color .3s}
+.field input:focus{border-color:var(--green);outline:none}
+.field input::placeholder{color:var(--muted);opacity:.7;font-family:var(--sans)}
+.status{min-height:28px;margin:18px 0;color:var(--muted);font-size:18px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{text-align:left;font-weight:500;color:var(--muted);font-size:15px;padding:12px 14px 12px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:16px 14px 16px 0;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+tbody tr{transition:background .3s}
+tbody tr:hover{background:rgba(22,40,31,.7)}
+td .why{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.tok b{font-weight:700;font-size:18px}
+.tok i{font-style:normal;color:var(--muted);font-size:14px;display:block;font-family:var(--mono)}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--green)}
+.bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:20px 0}
+.bar .grow{flex:1}
+.burnbar{position:sticky;bottom:0;background:var(--bg);padding:14px 0;border-top:1px solid var(--line);z-index:10}
+.empty{border:2px dashed var(--line);border-radius:18px;padding:44px 20px;text-align:center}
+.empty b{display:block;font-size:clamp(34px,5vw,56px);font-weight:800;font-stretch:78%;margin-bottom:10px;line-height:1}
+.empty p{color:var(--muted);margin:0 0 20px}
+.err{color:var(--danger)}
+.small{font-size:15px;color:var(--muted);line-height:1.5}
+@media(max-width:720px){
+  .stack thead{display:none}
+  .stack tr{display:block;border-bottom:1px solid var(--line);padding:14px 0}
+  .stack td{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;border:0;padding:4px 0}
+  .stack td:before{content:attr(data-l);color:var(--muted);font-size:14px;flex:0 0 38%}
+  .stack td>*{text-align:right}
+}
+
+/* bin */
+.bin-top{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:24px;align-items:center}
+.bin-top .scene{height:300px;min-height:0}
+@media(max-width:800px){.bin-top{grid-template-columns:1fr}.bin-top .scene{order:-1;height:220px;position:relative;top:0}}
+.panel{margin-top:34px}
+.panel h3{font-size:clamp(40px,6vw,72px);margin-bottom:12px}
+
+/* how */
+.steps{list-style:none;margin:40px 0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:minmax(70px,.2fr) minmax(0,1fr) minmax(0,1fr);gap:clamp(10px,3vw,40px);padding:clamp(24px,3.5vw,40px) 0;border-top:1px solid var(--line);align-items:baseline}
+.steps li:last-child{border-bottom:1px solid var(--line)}
+.steps li:before{content:"0" counter(s);font-family:var(--mono);color:var(--green);font-size:18px}
+.steps h3{font-size:clamp(36px,5.4vw,76px);line-height:.9}
+.steps p{margin:0;opacity:.9;font-size:18px}
+@media(max-width:760px){.steps li{grid-template-columns:1fr;gap:8px}}
+.rule{background:linear-gradient(135deg,#1b3327,var(--soil));box-shadow:inset 0 0 0 2px var(--deep)}
+.risk{margin-top:34px;box-shadow:inset 0 0 0 2px rgba(217,139,106,.45)}
+.risk b{font-size:34px;font-weight:800;font-stretch:78%;display:block;margin-bottom:12px;color:var(--danger);line-height:1}
+
+/* ledger */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:34px 0 26px}
+.tabs button{background:none;border:2px solid var(--line);border-radius:999px;color:var(--muted);padding:9px 20px;font-size:16px;font-weight:500;transition:all .3s}
+.tabs button:hover{border-color:var(--green);color:var(--bone)}
+.tabs button[aria-selected=true]{background:var(--green);border-color:var(--green);color:var(--pit);font-weight:700}
+.kv{display:flex;flex-wrap:wrap;gap:12px 40px;margin:18px 0 26px}
+.kv div{font-size:17px}
+.rows{list-style:none;padding:0;margin:16px 0}
+.rows li{padding:14px 0;border-bottom:1px solid var(--line);font-size:16px;overflow-wrap:anywhere}
+.rd h3{font-size:clamp(54px,9vw,120px);margin-bottom:6px}
+
+/* report */
+.report{max-width:660px}
+.report canvas{width:100%;height:auto;border-radius:18px;display:block}
+
+/* footer */
+footer{margin-top:0;padding:40px var(--gut) 50px;font-size:15px;color:var(--muted);background:var(--pit)}
+footer .row{max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;gap:12px 32px;align-items:baseline}
+footer .grow{flex:1 1 320px}
+footer strong{font-size:30px;color:var(--bone);font-weight:800;font-stretch:78%;letter-spacing:-.02em}
+footer p{margin:8px 0 0}
+footer .risk-line{color:var(--bone)}
+
+/* modal + toast */
+.modal{position:fixed;inset:0;z-index:320;background:rgba(11,20,16,.82);display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal.on{display:flex}
+.modal__box{background:var(--soil);border-radius:22px;max-width:540px;width:100%;max-height:92vh;overflow:auto;padding:clamp(22px,4vw,34px);animation:rise .5s var(--ease)}
+.modal h3{font-size:44px;margin-bottom:12px}
+.modal ul.pv{list-style:none;padding:0;margin:16px 0;font-size:16px;font-family:var(--mono)}
+.modal ul.pv li{padding:8px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.modal .notes{padding-left:20px;margin:16px 0;color:var(--muted);font-size:15px}
+.modal .acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.wopt{display:flex;width:100%;align-items:center;gap:12px;justify-content:space-between;background:var(--pit);border:2px solid var(--line);border-radius:14px;padding:14px 18px;margin:10px 0;min-height:54px;font-size:18px;font-weight:600;text-decoration:none;color:var(--bone);transition:border-color .3s}
+.wopt:hover{border-color:var(--green);color:var(--bone)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--bone);color:var(--pit);padding:12px 22px;border-radius:999px;font-size:16px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .4s,transform .5s var(--ease);z-index:400;max-width:calc(100vw - 32px);text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.nojs{padding:40px var(--gut);text-align:center;font-size:28px;font-weight:700}
+
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+  .ticker{overflow-x:auto}
+}
+
+/* ===== rot effects ===== */
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+main,footer{position:relative;z-index:1}
+[data-crack]{position:relative}
+.crack{position:absolute;left:0;top:-7px;width:100%;height:14px;overflow:visible;pointer-events:none}
+.crack path{fill:none;stroke:rgba(111,195,163,.55);stroke-width:1.4;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-dasharray:var(--len,1200);stroke-dashoffset:var(--len,1200);transition:stroke-dashoffset 2.2s var(--ease) .15s}
+.crack .br{stroke:rgba(143,181,163,.4);transition-delay:1.1s}
+.in>.crack path,.in.crack path,.reveal.in .crack path,footer.in>.crack path,.in .crack path{stroke-dashoffset:0}
+.stats>.crack,.big-cta>.crack,footer>.crack{top:-7px}
+/* rows: border becomes a crack */
+.row4{border-top:0}
+.row4>.crack{top:-7px}
+.row4 h3{justify-self:start;position:relative}
+.rw .wd{display:inline-block;white-space:nowrap}
+.rw .ch{display:inline-block;opacity:0;transform:translateY(.38em) rotate(var(--r,0deg));filter:blur(8px);color:var(--mid);transition:opacity .9s var(--ease),transform 1.1s var(--ease),filter 1s var(--ease),color 1.8s ease;transition-delay:calc(var(--i)*65ms)}
+.in .rw .ch,.rw.in .ch{opacity:1;transform:none;filter:none;color:inherit}
+.done .rw .ch{transition:color .7s ease,transform .8s var(--ease);transition-delay:calc(var(--i)*45ms)}
+.done:hover .rw .ch{color:var(--green);transform:translateY(var(--dy)) rotate(var(--r2))}
+/* Find: a scan line sweeps the word */
+.fx-find{overflow:hidden;padding:.04em .06em .14em;margin:-.04em -.06em -.14em}
+.fx-find:after{content:"";position:absolute;top:0;bottom:0;left:-24%;width:14%;background:linear-gradient(90deg,transparent,rgba(111,195,163,.38),transparent);transform:skewX(-14deg);animation:scan 7s var(--ease) 1.5s infinite;pointer-events:none}
+@keyframes scan{0%,52%{left:-24%}88%,100%{left:112%}}
+/* Burn: slow ember glow on the letters and a few sparks rising */
+.fx-burn .ch{animation:ember 4.2s ease-in-out infinite;animation-delay:calc(var(--i)*-.7s)}
+@keyframes ember{0%,100%{text-shadow:0 0 0 rgba(217,139,106,0)}50%{text-shadow:0 -2px 16px rgba(217,139,106,.42),0 0 2px rgba(217,139,106,.35)}}
+.ember{position:absolute;bottom:18%;width:4px;height:4px;border-radius:50%;background:var(--danger);opacity:0;pointer-events:none;animation:spark 4.4s linear infinite}
+@keyframes spark{0%{transform:translate(0,0) scale(1);opacity:0}15%{opacity:.75}100%{transform:translate(var(--dx,0),-110px) scale(.3);opacity:0}}
+/* Count: tally marks scratch in underneath */
+.fx-count:after{content:"";position:absolute;left:0;bottom:-.02em;height:7px;width:0;background:repeating-linear-gradient(90deg,var(--green) 0 3px,transparent 3px 15px);transition:width 1.8s var(--ease) .9s;opacity:.8}
+.in .fx-count:after{width:100%}
+/* Pay: a coin drops in beside the word */
+.fx-pay:after{content:"";position:absolute;right:-.34em;top:.12em;width:.2em;height:.2em;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e8b36a,#9a6a2c);box-shadow:0 0 0 0 rgba(176,122,58,.55);opacity:0;animation:coin 6s var(--ease) 2s infinite;pointer-events:none}
+@keyframes coin{0%{transform:translateY(-1.7em);opacity:0}12%{opacity:1}36%{transform:translateY(.62em);opacity:1;box-shadow:0 0 0 0 rgba(176,122,58,.55)}56%{transform:translateY(.62em);opacity:0;box-shadow:0 0 0 .34em rgba(176,122,58,0)}100%{transform:translateY(.62em);opacity:0}}
+/* verdigris creeps over cards and feed tiles on hover */
+.card,.fc{position:relative;overflow:hidden}
+.card:before,.fc:before{content:"";position:absolute;right:-30%;bottom:-70%;width:95%;aspect-ratio:1;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 45% 40%,rgba(79,168,138,.34),rgba(79,168,138,.12) 45%,transparent 66%);transform:scale(.35);opacity:0;transition:transform 1.6s var(--ease),opacity 1s ease}
+.card:hover:before,.fc:hover:before{transform:scale(1.15);opacity:1}
+.card>*,.fc>*{position:relative}
+/* the big accent lines erode at the edges */
+.hero h2 em,.big-cta h3{filter:url(#erode)}
+/* footer sprout */
+footer{overflow:visible}
+.fsprout{position:absolute;right:var(--gut);bottom:100%;width:54px;height:63px;overflow:visible;pointer-events:none}
+.fsprout .st1{fill:none;stroke:var(--green);stroke-width:3;stroke-linecap:round;stroke-dasharray:60;stroke-dashoffset:60;transition:stroke-dashoffset 1.6s var(--ease) .3s}
+.fsprout .lf{transform-box:fill-box;transform-origin:50% 100%;transform:scale(0);transition:transform 1.4s var(--ease)}
+.fsprout .l1{fill:var(--green);transition-delay:1.5s}
+.fsprout .l2{fill:var(--mid);transition-delay:1.8s}
+footer.in .st1{stroke-dashoffset:0}
+footer.in .lf{transform:scale(1)}
+@media(prefers-reduced-motion:reduce){
+  .rw .ch{opacity:1;transform:none;filter:none;color:inherit}
+  .crack path{stroke-dashoffset:0}
+  .fsprout .st1{stroke-dashoffset:0}.fsprout .lf{transform:scale(1)}
+  .hero h2 em,.big-cta h3{filter:none}
+  .fx-count:after{width:100%}
+  .ember,.fx-pay:after{display:none}
+}
+
+.chip{text-decoration:none;transition:border-color .3s,transform .5s var(--ease)}
+a.chip:hover{border-color:var(--green);color:var(--bone);transform:translateY(-2px)}
+.wl{color:inherit;text-decoration:none;border-bottom:1px dotted rgba(143,181,163,.6);font-family:var(--mono);font-size:.92em}
+.wl:hover{color:var(--green);border-bottom-color:var(--green)}
+.tools{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;margin:0 0 18px}
+.tools input[type=search]{flex:1 1 260px;min-width:0;background:var(--pit);border:2px solid var(--line);color:var(--bone);padding:11px 20px;border-radius:999px;font:inherit;font-size:16px;min-height:48px;transition:border-color .3s}
+.tools input[type=search]:focus{border-color:var(--green);outline:none}
+.tools input[type=search]::placeholder{color:var(--muted);opacity:.75}
+.chk{display:inline-flex;align-items:center;gap:10px;cursor:pointer;color:var(--bone)}
+
+.prog{height:8px;border-radius:99px;background:var(--soil);overflow:hidden;margin:4px 0 22px;max-width:460px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--deep),var(--green));border-radius:inherit;transform-origin:left;animation:grow 1.6s var(--ease) both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.sb{display:block;height:5px;border-radius:9px;background:rgba(111,195,163,.18);margin-top:7px;width:min(100%,150px);position:relative;overflow:hidden}
+.sb:after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--green);border-radius:inherit;transform-origin:left;animation:grow 1.4s var(--ease) both}
+tr.me td{background:rgba(111,195,163,.09)}
+tr.me td:first-child{box-shadow:inset 3px 0 0 var(--green);padding-left:10px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<filter id="erode" x="-4%" y="-8%" width="108%" height="116%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="n"><animate attributeName="baseFrequency" dur="16s" values="0.03;0.046;0.03" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G"/></filter>
+</defs></svg>
+<noscript><p class="nojs">ROT needs JavaScript to read the chain.</p></noscript>
+<a class="skip" href="#main">Skip to content</a>
+<div id="loader" role="status"><div><p id="loaderTxt">Warming the greenhouse…</p><button type="button" id="loaderSkip">Skip</button></div></div>
+
+<header class="chrome" id="chrome">
+  <a class="brand" href="#/" aria-label="rot, back to the heap"><span class="mk" role="img" aria-hidden="true"></span><span class="w">rot</span></a>
+  <nav class="nav" id="nav" aria-label="Pages">
+    <a href="#/how" data-r="how">How</a>
+    <a href="#/bin" data-r="bin">Bin</a>
+    <a href="#/ledger" data-r="ledger">Ledger</a>
+  </nav>
+  <a class="x" id="xLink" href="https://x.com/TheRotCoin_" target="_blank" rel="noopener">X</a>
+  <button class="snd" id="sound" type="button" aria-pressed="false">Sound off</button>
+  <button class="btn btn--ghost noar" id="walletBtn" type="button">Connect</button>
+</header>
+
+<main id="main" tabindex="-1">
+<h1 class="sr">ROT: dead bags rot, and the rot feeds the next.</h1>
+
+<!-- HOME -->
+<section class="page" data-page="rot" id="page-rot" aria-label="Home">
+  <div class="home-run" id="homeRun">
+    <div class="stick">
+      <div class="hero">
+        <div class="hero__txt">
+          <h2>Dead bags rot.<em>Rot feeds the next.</em></h2>
+          <p class="lede">Burn the dead coins in your wallet. Every burn goes on a public ledger, and every round the fee pot buys $ROT and sends it to the wallets that burned.</p>
+          <div class="ctas">
+            <a class="btn" href="#/bin">Open the bin</a>
+            <a class="btn btn--ghost" href="#/how">How it works</a>
+          </div>
+          <div class="counters">
+            <div class="counter"><b id="cntBags">0</b><span>Bags rotted</span></div>
+            <div class="counter" id="cntPaidWrap" hidden><b id="cntPaid">0</b><span>$ROT paid out</span></div>
+          </div>
+          <a class="chip" id="roundChip" href="#/ledger/round" hidden></a>
+        </div>
+        <div class="scene" id="homeScene">
+          <canvas id="homeCanvas" aria-hidden="true"></canvas>
+          <svg class="coinsvg" id="homeSvg" viewBox="0 0 200 200" aria-hidden="true"></svg>
+        </div>
+      </div>
+      <div class="soil" id="soil">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 46 C24 34 24 26 24 18" stroke="#6FC3A3" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M24 24 C14 24 8 16 8 10 C18 10 24 15 24 24Z" fill="#6FC3A3"/><path d="M24 20 C30 20 38 14 40 6 C32 6 24 10 24 20Z" fill="#4FA88A"/></svg>
+        <p id="homeCap" aria-live="polite">Fresh. Somebody paid full price for this.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticker" id="ticker" aria-hidden="true" hidden><div class="tr" id="tickerTr"></div></div>
+
+  <section class="rows4">
+    <div class="wrap">
+      <div class="row4 reveal" data-crack><span class="n">01</span><h3 class="rw fx-find">Find</h3><p>Connect a wallet and ROT lists every token in it that looks dead.</p></div>
+      <div class="row4 reveal" data-crack><span class="n">02</span><h3 class="rw fx-burn">Burn</h3><p>You burn them from your own wallet. Closing the emptied account also refunds its rent.</p></div>
+      <div class="row4 reveal" data-crack><span class="n">03</span><h3 class="rw fx-count">Count</h3><p>Every burn through the bin goes on a public ledger. One point for each distinct token.</p></div>
+      <div class="row4 reveal" data-crack><span class="n">04</span><h3 class="rw fx-pay">Pay</h3><p>Every round the fee pot buys $ROT and sends it to the wallets that burned, by points.</p></div>
+    </div>
+  </section>
+
+  <section class="stats" id="stats" hidden data-crack>
+    <div class="wrap">
+      <div class="stat reveal"><b data-count="bags">0</b><span>Bags rotted</span></div>
+      <div class="stat reveal" style="--d:.1s"><b data-count="wallets">0</b><span>Wallets</span></div>
+      <div class="stat reveal" style="--d:.2s"><b data-count="rounds">0</b><span>Rounds paid</span></div>
+      <div class="stat reveal" style="--d:.3s"><b data-count="paid">0</b><span>$ROT paid out</span></div>
+    </div>
+  </section>
+
+  <section class="feedsec" id="feedSec" hidden>
+    <div class="wrap">
+      <div class="feedhead reveal"><h3 class="rw">Just rotted.</h3><a class="btn btn--ghost" href="#/ledger/burns">Open the ledger</a></div>
+      <div class="feed" id="feed"></div>
+    </div>
+  </section>
+
+  <section class="big-cta" data-crack>
+    <div class="wrap reveal"><h3 class="rw">Got a dead bag?</h3><a class="btn" href="#/bin">Open the bin</a></div>
+  </section>
+
+  <div class="facts" id="tokenFacts" hidden>
+    <div class="wrap">
+      <b>$ROT</b>
+      <span id="tfCa"></span>
+      <button type="button" id="tfCopy">Copy contract</button>
+      <span id="tfMint">Mint authority  ·  …</span>
+      <span id="tfFreeze">Freeze authority  ·  …</span>
+      <span>Read live from the chain.</span>
+      <a id="tfChart" target="_blank" rel="noopener">Chart</a>
+      <a id="tfExp" target="_blank" rel="noopener">Explorer</a>
+    </div>
+  </div>
+</section>
+
+<!-- BIN -->
+<section class="page" data-page="bin" id="page-bin" aria-label="Bin">
+  <div class="wrap pg">
+    <div class="bin-top">
+      <div>
+        <h2>Drop a dead bag in.</h2>
+        <p class="lede">Connect a wallet or paste an address. ROT reads the tokens in it and marks the ones that look dead. Reading costs nothing and moves nothing.</p>
+      </div>
+      <div class="scene" id="binScene">
+        <canvas id="binCanvas" aria-hidden="true"></canvas>
+        <svg class="coinsvg" id="binSvg" viewBox="0 0 200 200" aria-hidden="true"></svg>
+      </div>
+    </div>
+    <form class="field" id="readForm" autocomplete="off">
+      <label class="sr" for="addr">Solana address</label>
+      <input id="addr" name="addr" type="text" placeholder="Paste a Solana address" spellcheck="false" autocapitalize="off" autocorrect="off">
+      <button class="btn noar" type="submit">Read wallet</button>
+    </form>
+    <p class="status" id="scanStatus" role="status" aria-live="polite">Connect a wallet or paste an address to start.</p>
+
+    <div id="scanOut" hidden>
+      <div class="tw"><table class="stack" id="tokTable">
+        <thead><tr><th scope="col"><span class="sr">Select</span></th><th scope="col">Token</th><th scope="col">Balance</th><th scope="col">Status</th><th scope="col">Counts?</th></tr></thead>
+        <tbody id="tokBody"></tbody>
+      </table></div>
+      <p class="small" id="tokSmall">"Looks dead" and "Should count" are guesses from public market data. The final check runs when the round is built. Burning is permanent, so check each token first.</p>
+      <div class="bar burnbar">
+        <button class="btn btn--ghost noar" type="button" id="selAll">Select all that should count</button>
+        <span class="muted" id="selCount">0 selected</span>
+        <span class="grow"></span>
+        <button class="btn noar" type="button" id="burnBtn" disabled>Pick a bag to burn</button>
+      </div>
+    </div>
+
+    <div id="reportBox" class="report panel" hidden>
+      <h3>Rot report</h3>
+      <canvas id="reportCanvas" width="1200" height="630" role="img" aria-label="Rot report card"></canvas>
+      <div class="bar">
+        <button class="btn noar" type="button" id="repShare">Share the report</button>
+        <button class="btn btn--ghost noar" type="button" id="repDl">Download card</button>
+        <button class="btn btn--ghost noar" type="button" id="repCopy">Copy link</button>
+      </div>
+    </div>
+
+    <div class="panel card" id="rotPanel" hidden>
+      <h3>Your rot</h3>
+      <p id="rotL1" style="font-size:22px"></p>
+      <p id="rotL2" class="muted" style="font-size:18px"></p>
+      <p id="rotEmpty" hidden>No burns from this wallet yet.</p>
+      <p class="small" style="margin-top:14px">Your share of a round is your points divided by all points in that round. What it's worth depends on the fees the pot collected and on the price of $ROT when the pot buys, and both can be low or zero.</p>
+    </div>
+
+    <div class="panel card" id="closePanel">
+      <h3>Empty accounts still hold rent.</h3>
+      <p class="lede">Every token account you opened keeps a small deposit, even at zero balance. Close the empty ones and it comes back to you.</p>
+      <p id="closeSum" style="margin-top:16px;font-size:20px" aria-live="polite"></p>
+      <p class="small" id="closeNote" hidden>Counted from the lamports those accounts actually hold.</p>
+      <div class="bar"><button class="btn noar" type="button" id="closeBtn" disabled>No empty accounts</button></div>
+      <p class="small">Closing empty accounts doesn't add points. The refund is yours to keep.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="page" data-page="how" id="page-how" aria-label="How it works">
+  <div class="wrap pg">
+    <h2>Five steps.<br><em>One pot.</em></h2>
+    <p class="lede">ROT burns dead coins, counts them in public and splits one fee pot by those counts. This is what it does and what it doesn't.</p>
+    <ol class="steps">
+      <li class="reveal"><h3>Find your dead bags</h3><p>ROT reads the token accounts in your wallet and checks each token against public market data. Tokens with no pair, almost no liquidity or no recent trades are marked as looking dead.</p></li>
+      <li class="reveal"><h3>Burn them</h3><p>You burn the ones you choose from your own wallet. ROT builds the transaction and shows every mint first. It contains burn and close-account instructions and nothing else.</p></li>
+      <li class="reveal"><h3>The ledger finds it</h3><p>Every burn through the bin carries the public bin address. ROT reads that address, checks each burn on-chain and lists it with the reason it counted or didn't.</p></li>
+      <li class="reveal"><h3>The round closes</h3><p>Each round lasts <span data-cfg="roundLengthDays"></span> days. When it ends, ROT publishes the points table. For <span data-cfg="challengeHours"></span> hours anyone can point at a burn that shouldn't count.</p></li>
+      <li class="reveal"><h3>The pot buys $ROT</h3><p>The pot wallet holds the fees $ROT's trading creates. After the challenge window, it buys $ROT on the market and sends it to the wallets that burned, divided by points. Every buy and every transfer is a public transaction on the ledger.</p></li>
+    </ol>
+    <div class="card rule reveal" id="ruleCard" hidden>
+      <h3>One rule</h3>
+      <p>100% of $ROT's creator fees go to the pot wallet. Nobody takes a cut. It was set at launch and locked, so nobody can change it, us included. Every round the pot buys $ROT and sends it to the wallets that burned.</p>
+      <p style="margin-top:14px"><a id="ruleLink" target="_blank" rel="noopener">Check the pot wallet</a></p>
+    </div>
+    <p class="card muted" id="rulePre">The rule will be written here before the first round, not after.</p>
+    <div class="grid c3" style="margin-top:14px">
+      <div class="card reveal"><h3>One point per token</h3><p>Burning ten of the same token is still one point. Ten different dead tokens is ten.</p></div>
+      <div class="card reveal" style="--d:.08s"><h3>Looks dead</h3><p>A token counts only if the market data says it's dead: no pair, liquidity under <span data-cfg="minLiquidityUsd"></span> USD, or no trades in 24 hours.</p></div>
+      <div class="card reveal" style="--d:.16s"><h3>Had to exist</h3><p>The token must have had a trading pair at least <span data-cfg="minPairAgeDays"></span> days before you burned it. Tokens that were never listed don't count.</p></div>
+      <div class="card reveal"><h3>Not your own</h3><p>Tokens your wallet created or controls don't count.</p></div>
+      <div class="card reveal" style="--d:.08s"><h3>Round cap</h3><p>At most <span data-cfg="maxMintsPerRound"></span> tokens per wallet in each round. This keeps one wallet from flooding the heap.</p></div>
+      <div class="card reveal" style="--d:.16s"><h3>Paid in $ROT</h3><p>Payouts are $ROT, bought on the market with the pot. The site shows what was paid, not what it will be worth.</p></div>
+      <div class="card reveal"><h3>Minimum payout</h3><p>A wallet is paid only when its share is worth at least <span data-cfg="minPayoutSol"></span> SOL. Smaller shares aren't sent, and their points carry into the next round.</p></div>
+      <div class="card reveal" style="--d:.08s"><h3>Account costs</h3><p>If your wallet has never held $ROT, the project opens the token account. That cost comes out of the pot, not your share.</p></div>
+      <div class="card reveal" style="--d:.16s"><h3>Published, not hidden</h3><p>The ledger, the rounds and the rules for counting are public files in the repo. If a rule changes, it changes in public.</p></div>
+    </div>
+    <div class="card risk reveal">
+      <b>Be honest about the risks.</b>
+      <p>A token that looks dead can come back, and burning it is permanent. Someone can also mint a worthless token and burn it for points. The listing check, the age check, the creator check, the round cap and a public blocklist are the defenses, and none of them is perfect. Payouts are $ROT, and what it's worth can fall after you receive it. The pot buys on a public market, so the buy has slippage and is itself market activity. The project runs the buy and the transfers from the pot wallet. They aren't automatic, and you're trusting us to run them. Every one is a public transaction you can check. Fees can be small or zero, and ROT isn't a promise that anything pays out or financial advice.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LEDGER -->
+<section class="page" data-page="ledger" id="page-ledger" aria-label="Ledger">
+  <div class="wrap pg">
+    <h2>Everything that<br><em>has rotted.</em></h2>
+    <p class="lede">Every burn that passed through the bin, newest first. Each row says whether it counted and why.</p>
+    <div class="tabs" role="tablist" aria-label="Ledger views" id="ledgerTabs">
+      <button role="tab" id="tab-round" aria-controls="lv" data-t="round">This round</button>
+      <button role="tab" id="tab-burns" aria-controls="lv" data-t="burns">Burns</button>
+      <button role="tab" id="tab-wallets" aria-controls="lv" data-t="wallets">Wallets</button>
+      <button role="tab" id="tab-rounds" aria-controls="lv" data-t="rounds">Past rounds</button>
+    </div>
+    <div id="lv" role="tabpanel"></div>
+  </div>
+</section>
+
+<!-- 404 -->
+<section class="page" data-page="404" id="page-404" aria-label="Not found">
+  <div class="wrap pg"><h2>Nothing to see here.</h2><p><a class="btn" href="#/">Back to the heap</a></p></div>
+</section>
+</main>
+
+<footer data-crack>
+  <svg class="fsprout" viewBox="0 0 60 70" aria-hidden="true"><path class="st1" d="M30 70 C30 52 30 40 30 26"/><path class="lf l1" d="M30 36 C16 36 6 26 5 14 C20 14 30 22 30 36Z"/><path class="lf l2" d="M30 28 C40 28 52 20 55 6 C42 6 30 14 30 28Z"/></svg>
+  <div class="row">
+    <div class="grow">
+      <strong>rot  ·  dead bags rot</strong>
+      <p class="risk-line">Not financial advice. Meme coins can lose all their value. Verify the contract on the official X.</p>
+      <p>Market data from DexScreener. Chain data from the Solana public RPC.</p>
+    </div>
+    <nav class="row" aria-label="Links" style="gap:18px">
+      <a href="https://x.com/TheRotCoin_" target="_blank" rel="noopener">X</a>
+      <a data-href="telegram" target="_blank" rel="noopener" hidden>Telegram</a>
+      <a data-href="repo" target="_blank" rel="noopener" hidden>Repo</a>
+    </nav>
+    <span>rot</span>
+  </div>
+</footer>
+
+<!-- wallet modal -->
+<div class="modal" id="wm" role="dialog" aria-modal="true" aria-labelledby="wmH">
+  <div class="modal__box">
+    <h3 id="wmH">Connect a wallet</h3>
+    <p class="muted">Pick a Solana wallet. ROT reads your address and token balances. It asks for a signature only when you choose to burn or close accounts.</p>
+    <div id="wmList"></div>
+    <div class="acts"><button class="btn btn--ghost noar" type="button" id="wmClose">Close</button></div>
+  </div>
+</div>
+<!-- preview modal (burn and close) -->
+<div class="modal" id="pv" role="dialog" aria-modal="true" aria-labelledby="pvH">
+  <div class="modal__box">
+    <h3 id="pvH"></h3>
+    <ul class="pv" id="pvList"></ul>
+    <ul class="notes" id="pvNotes"></ul>
+    <p class="err" id="pvErr" role="alert"></p>
+    <p class="muted" id="pvState" aria-live="polite"></p>
+    <div class="acts">
+      <button class="btn noar" type="button" id="pvOk">Sign in your wallet</button>
+      <button class="btn btn--ghost noar" type="button" id="pvBack">Back</button>
+    </div>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+window.ROT_CONFIG = {
+  ca: "",                // $ROT contract address. Empty hides the facts strip.
+  x: "",                 // official X link
+  telegram: "",
+  repo: "",
+  binAddress: "",        // public bin address added to every burn; empty keeps burning closed
+  potWallet: "",         // public pot wallet that receives the creator fees; empty hides pot lines
+  feeRuleLocked: false,  // owner sets true only after checking the lock on the launch platform
+  roundStart: "2026-08-30T00:00:00Z", // ISO date (UTC) when round 1 started
+  roundLengthDays: 28,
+  challengeHours: 48,
+  minLiquidityUsd: 500,
+  minPairAgeDays: 7,
+  maxMintsPerRound: 25,
+  minPayoutSol: 0.01,    // a wallet is paid only if its share is worth at least this much
+  maxPriceImpactPct: 3,  // pay-round refuses a swap above this price impact
+  rpc: "https://solana-rpc.publicnode.com", // browser-friendly public RPC. api.mainnet-beta.solana.com answers 403 to browser requests. Use your own keyed RPC for the wallet scan.
+  ledgerUrl: "./ledger.json",
+  roundsUrl: "./rounds/index.json",
+  burnEnabled: false     // keeps burn and close buttons closed until tested
+};
+</script>
+<script type="module" src="./assets/app.js"></script>
+<script type="module" src="./assets/fx.js"></script>
+</body>
+</html>

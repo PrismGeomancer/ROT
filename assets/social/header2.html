@@ -1,0 +1,39 @@
+<!doctype html><html><head><meta charset="utf-8"><title>ROT X header v2</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap">
+<style>
+*{margin:0;box-sizing:border-box}
+html,body{width:1500px;height:500px;background:#000;overflow:hidden}
+#h{position:relative;width:1500px;height:500px;background:#030504;overflow:hidden}
+.logo{position:absolute;left:310px;top:46px;height:300px;filter:drop-shadow(0 0 30px rgba(111,195,163,.18))}
+.tag{position:absolute;left:0;width:960px;top:366px;text-align:center;font:500 25px 'JetBrains Mono',monospace;color:#8a948f;letter-spacing:.01em;white-space:nowrap}
+.tag i{display:inline-block;width:14px;height:27px;background:#6FC3A3;vertical-align:-5px;margin-left:10px}
+.t{position:absolute;width:64px;height:64px;border-radius:15px;background:linear-gradient(#111a15,#0a100d);border:1px solid rgba(143,181,163,.16)}
+.t b{position:absolute;inset:8px 9px 6px;-webkit-mask:url(../mark.png) center/contain no-repeat;mask:url(../mark.png) center/contain no-repeat}
+</style></head><body><div id="h">
+<svg width="0" height="0" style="position:absolute"><defs>
+<filter id="r1" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".07" numOctaves="3" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3" result="d"/><feColorMatrix in="n" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -16 11.2" result="o"/><feComposite in="d" in2="o" operator="in"/></filter>
+<filter id="r2" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="3" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" result="d"/><feColorMatrix in="n" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -16 9.6" result="o"/><feComposite in="d" in2="o" operator="in"/></filter>
+<filter id="r3" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".11" numOctaves="3" seed="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7" result="d"/><feColorMatrix in="n" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -16 8.2" result="o"/><feComposite in="d" in2="o" operator="in"/></filter>
+</defs></svg>
+<img class="logo" src="../../Logo_no_background.png" alt="">
+<div class="tag">dead bags rot. rot feeds the next.<i></i></div>
+<script>
+const pal=['#E9E5D2','#6FC3A3','#4FA88A','#8FB5A3','#D98B6A','#E9E5D2','#6FC3A3','#2A5E4D'];
+let s=11;const R=()=>(s=(s*16807)%2147483647)/2147483647;
+const h=document.getElementById('h');
+for(let r=0;r<6;r++)for(let c=0;c<8;c++){
+ const t=document.createElement('div');t.className='t';
+ t.style.left=(866+c*75)+'px';t.style.top=(31+r*76)+'px';
+ const b=document.createElement('b');
+ const k=c/7; // 0 rotten -> 1 alive
+ let col=pal[Math.floor(R()*pal.length)];
+ if(c>=5&&R()<.55)col='#6FC3A3';
+ if(c<=1&&R()<.5)col='#2A5E4D';
+ b.style.background=col;
+ b.style.opacity=(.16+k*.84).toFixed(2);
+ b.style.filter=c<=1?'url(#r3)':c<=3?'url(#r2)':c<=4?'url(#r1)':'none';
+ t.style.opacity=(.35+k*.65).toFixed(2);
+ if(c>=6)b.style.filter='drop-shadow(0 0 6px rgba(111,195,163,.35))';
+ t.appendChild(b);h.appendChild(t);
+}
+</script></div></body></html>

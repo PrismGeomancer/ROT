@@ -1,0 +1,26 @@
+{
+  "name": "rot",
+  "private": true,
+  "version": "0.1.0",
+  "description": "ROT: dead bags rot. Static site, operator scripts and ledger.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/",
+    "serve": "python3 -m http.server 8080",
+    "ledger": "node tools/build-ledger.mjs",
+    "round": "node tools/build-round.mjs",
+    "pay": "node tools/pay-round.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@solana/spl-token": "0.4.9",
+    "@solana/web3.js": "1.98.0"
+  },
+  "overrides": {
+    "rpc-websockets": {
+      "uuid": "9.0.1"
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "n": 1,
+  "start": "2026-08-30T00:00:00.000Z",
+  "end": "2026-09-27T00:00:00.000Z",
+  "snapshotAt": "2026-09-27T00:00:00.000Z",
+  "challengeEndsAt": "2026-09-29T00:00:00.000Z",
+  "potLamports": 2300000000,
+  "spentLamports": 2299999993,
+  "rentReserveLamports": 22432080,
+  "swapSigs": [
+    "5iq6GwHHW7CJ57mdZXKcg3cmz8kPMeWq1ZnGtAbu3k1JjNsGuTaQvDFuVQwGaE2MmavDTpsQZtkZHKT6mvofjfj6",
+    "5yG4RYBqpF2x7wJ3A6mD6Jtsr8BqJSiqh2LcAL6dRnEj117WF8LXVrPsufBYC3QKv5F7GofUADbF157PYY6te4Ns"
+  ],
+  "rotBoughtBase": "48217664302118",
+  "remainderBase": "9",
+  "totalPoints": 36,
+  "payouts": [
+    {
+      "wallet": "3Ys9aP9RwpB3YJHtGsppKXgDUcukom75DSfbAYzBTshd",
+      "points": 4,
+      "rotBase": "5357518255790",
+      "sig": "63oSudCyw3pdUW1LT2Q1TNLU57jpuzZGUFehhxixvXbT2zJP4vJmkarGDQsyxDPQCURbVsvpndvtPYyEwBbHrbaL"
+    },
+    {
+      "wallet": "FQC4pmEkweF9oeuTXyYYyRzZ5LGMA4NP5ZG2u1oqUK66",
+      "points": 4,
+      "rotBase": "5357518255790",
+      "sig": "42bRohjvP5MfxGx53erxJvsqgNsuUwLVVeumpYjv4WQ726jH73CSHEAqUgS1FiUQUjLvaYuXkWskfgRrCSE5YvLk"
+    },
+    {
+      "wallet": "FsE8Qe6fWXBTCXAqAvaS5kGGKSV8uihocehBcPXzvrhC",
+      "points": 4,
+      "rotBase": "5357518255790",
+      "sig": "4JW3qPoDpd7Gwb2xUixykmP8NtceLsxogtmB2dumWreEtpreJhBbNa4a5PNWvcUC1mtrHnhXwERGx9DxosmtUAyX"
+    },
+    {
+      "wallet": "6JmzS7Pv2xGrQjd5LzNRxRdkdiRYRecMT39VuvJQBBAL",
+      "points": 3,
+      "rotBase": "4018138691843",
+      "sig": "2Pp4uvGW72joHkGRoJSXXS4udsN4TE2S8shyLyNYVJAg4dC75cQmyPKp4xgy2trBLtfhJWQzoamopXVGs3tbgnmW"
+    },
+    {
+      "wallet": "9UD1a6keRhtKHdpmUSwYdUSA1MnGQsKVPoN8kPHCgAN9",
+      "points": 3,
+      "rotBase": "4018138691843",
+      "sig": "5JiyqYtKPPH59PKMzU217mX6LytPpRX5x4LLVVUM8JTMSLK1j5e2619muuxzwZmaBD7xzfS6Fq2nC8wbgquS3URg"
+    },
+    {
+      "wallet": "CzNy2cfAb5HkPSMzGERULUoJb2Kcz29kzZsqnjUs7U3Z",
+      "points": 3,
+      "rotBase": "4018138691843",
+      "sig": "5xCd3NBCN5k18bBZufLHjE3hhP3Dc8DaduULLUkTTnzD7VD9fznDztB7gb58rSguxbt5mgBRG6BMzeyXCohMRt1T"
+    },
+    {
+      "wallet": "D6tmUvmy5LzHHPFKmUqWNbtzcB8QLsATqitGGjLECJuK",
+      "points": 3,
+      "rotBase": "4018138691843",
+      "sig": "3eZTmxB683KRGv9jumZPFdMMbxGxspZkzmBMCRxVuqLrZyhq438LVpsqM17927Cg25ixNdKp1sXPYY5j9vysGgEk"
+    },
+    {
+      "wallet": "2rfG6iFQykQEb1Ys96WygLe6uySTEpBETnPNiCVdvUu5",
+      "points": 2,
+      "rotBase": "2678759127895",
+      "sig": "49pSRiKWffZd7zYGKeWYo7VjHU7H1eEWRKVdYqwWAo8XxF3q6XrnzRG98DzhLE85xsqNfNdvWsD9yqGSy9K5Ftzf"
+    },
+    {
+      "wallet": "AHJZtVYVgEvNJ3ZeS8k3onx56mbtUJpCQK1XrovR5TSH",
+      "points": 2,
+      "rotBase": "2678759127895",
+      "sig": "4C86KNeuGdXCzRZG4Qwbw6tLbHJHDMiCfdfKcVV7vnmVWHMSLqK8bxLJ9CpmjAP1MeBeK4FU9CQK9MRrxxF98hRx"
+    },
+    {
+      "wallet": "FW2p4YdfF912KfrUUWfHFARMLytMxh61PhdGvb3LQ9x7",
+      "points": 2,
+      "rotBase": "2678759127895",
+      "sig": "qd87wx5usGwprsLRhEriPQb3AbVz2y7DSHBCatqf9TJ2HAucUxAWdTgkEQekhwHTkioo4aUwUTuGogoEaZgX2Yf"
+    },
+    {
+      "wallet": "53GJPozY8G4Z23ucK8m6gxehY5mWRFHVa5wMhyESzMCi",
+      "points": 1,
+      "rotBase": "1339379563947",
+      "sig": "XW6CjzovMox1QnHnTCspYucEqyqzf9ffm2tBQomCQ4ufEZKv2nsDBBuGTqwADGvyKwYqe6fSNQwFtLoNRWgbGtV"
+    },
+    {
+      "wallet": "8TzNdTFzuEZfh4pQGpShySZWM8adbxJqvBPZVbsPwKyz",
+      "points": 1,
+      "rotBase": "1339379563947",
+      "sig": "3raobGu5sQPnAKWwXQNyA2U6VpJMU9T2Zjj7z3JsCuE1FZ8dSojfeX99DMp6iT1x5DkRa5t1JKDEMf6Q2KBFdSqe"
+    },
+    {
+      "wallet": "9KxEGVNDxmvSjh9Qss7ztFtZrzmw4K9qAonTQXsfrq3q",
+      "points": 1,
+      "rotBase": "1339379563947",
+      "sig": "5cWN4ibW5N9hKZW1CsrwTgj61HJNdb1HzkzvPPuFAn44K7ytdArA2UadMpgRCCo3XgosGd3eCY69iXQSJ6Fk5b8s"
+    },
+    {
+      "wallet": "AULX5u2bLoaF1DkjtnCzWPov62UZqc3zgb6d8sbs3NdY",
+      "points": 1,
+      "rotBase": "1339379563947",
+      "sig": "4ovufKbDN3jnXTND8HBNJR4zTPqqG3e2WXg2msXDvuwjZtHQ6ToyFzXPBaqCqECccmnQiAgMAu8BJVnsQHeLt9sx"
+    },
+    {
+      "wallet": "EaYHbsyPEnZogPog5iw4vuK7p7VmTYgFpAC67Hz3kJMA",
+      "points": 1,
+      "rotBase": "1339379563947",
+      "sig": "5uCX8xo2NdjfTQ5yxCYbFB8ouisHJ28QnK8mnBNb2fshGfuy8hQrHpuKVntc6o8wzUoXNEYRHjdqY6mv7gGHqcdM"
+    },
+    {
+      "wallet": "QoD2D4BM813UapnY3qNuoxYxeee8SDCzTrBGEb6hmCy",
+      "points": 1,
+      "rotBase": "1339379563947",
+      "sig": "4QcDma1nSU78KB1w1MZh2enNXa6PRU5qCmrN34kDYseicV68cLLCfqA8V1y5Vo2cNAnXTTbvV89PVVqNg5DfZmZQ"
+    }
+  ],
+  "carriedPoints": [],
+  "removed": [],
+  "status": "paid",
+  "decimals": 6
+}

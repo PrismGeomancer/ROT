@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+.env
+.env.*
+*keypair*.json
+*.keypair
+id.json
+*.pem
+seed*.txt
+tools/signatures.local.txt
